@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart basket</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="item-container" id="item-container">
+        <table cellspacing="30" id="table">
+            <thead>
+                <th>SNO</th>
+                <th>Item</th>
+                <th>Price</th>
+            </thead>
+            <tr>
+                <td>1</td>
+                <td>Colgate 50gm</td>
+                <td>Rs.50</td>
+                <td><button>delete</button></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>5 star</td>
+                <td>Rs.30</td>
+                <td><button>delete</button></td>
+            </tr>
+        </table>
+    </div>
+    <div class="form-container">
+        <form id="form">
+            <label for="item-name">Item Name:</label>
+            <input id="item-name" type="text" name="itemName" placeholder="Name of the item" required>
+            <br>
+            <br>
+            <label for="price-input">Price:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <input id="price-input" type="number" min="1" name="priceAmt" placeholder="Price of the item" required>
+            <br>
+            <br>
+            <button type="submit" id="submit-btn">Submit</button>
+        </form>
+    </div>
+</body>
+
+    
+<script src="script.js"></script>
+</html>
