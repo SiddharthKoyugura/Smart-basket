@@ -1,58 +1,61 @@
-
-const form = document.getElementById("form");
-const itemContainer = document.getElementById("item-container");
-const submitBtn = document.getElementById("submit-btn");
-const itemEl = document.getElementById("item-name");
-const priceEl = document.getElementById("price-input");
-
-// table data
-const tableEl = document.getElementById("table");
-
-let itemInput = "";
-let priceInput = 0;
-let serialNo = 0;
-
-function createItemEl(name, price){
-    const tableRow = document.createElement("tr");
-    const tableData1 = document.createElement("td");
-    const tableData2 = document.createElement("td");
-    const tableData3 = document.createElement("td");
-    const tableData4 = document.createElement("td");
-    const buttonEl = document.createElement("button");
-
-    tableData1.textContent = serialNo;
-    tableData2.textContent = name;
-    tableData3.textContent = `Rs.${price}`;
-    
-    buttonEl.textContent = "delete";
-    tableData4.appendChild(buttonEl);
-
-    tableRow.append(tableData1, tableData2, tableData3, tableData4);
-
-    // Append to the table tag
-    tableEl.appendChild(tableRow);
+var serialno=2;
+barcode={
+    "5555555555":["LAYS",99],
+    "6666666666":["SNICKERS",20],
+    "7777777777":["CHEETOS",20]
 }
-
-// Getting the form data
-function submit_onClick(e){
-    itemInput =  form.itemName.value;
-    priceInput = form.priceAmt.value;
-
-    if(itemInput==="" || priceInput===""){
-        alert("Please fill the input fields.");
-        return;
+function isBarcodeExist(eanvalue){
+    const isInArray =barcode.hasOwnProperty(eanvalue);
+    return isInArray;
+}
+$(document).ready(()=>{
+    $("#submit-btn").click(() => {
+    var bardata=$("#barcode-data").val();
+    var itemname = $("#item-name").val();
+    var priceinput = $("#price-input").val();
+    if(bardata===""&&itemname===""&&priceinput===""){
+        alert("Enter details please");
     }
+    serialno+=1;
+    if(itemname===""&&priceinput===""){
+        if(isBarcodeExist(bardata)){
+            console.log(barcode[bardata]);
+            createtable(barcode[bardata][0],barcode[bardata][1]);
+            $("#barcode-data").val("");
+        }
+        else{
+            alert("Enter correct value");
+            $("#barcode-data").val("");
+        }
+    }
+    if(bardata===''){
+        console.log("done");
+        createtable(itemname, priceinput);
+        $("#item-name").val("");
+        $("#price-input").val("");
+    }
+    });
+});
 
-    serialNo += 1;
-
-    createItemEl(itemInput, priceInput)
-
-    console.log(itemInput, priceInput);
-
-    itemEl.value="";
-    priceEl.value="";
-
-    e.preventDefault();
+function createtable(name, price) {
+    var ourtable = $("#table");
+    var trthat = $('<tr>');
+    var nameofproduct = $('<td>');
+    var priceofproduct = $('<td>');
+    var forbutton = $('<td>');
+    var buttonEl = $('<button>');
+    
+    trthat.attr("id","data"+serialno);
+    nameofproduct.text(name);
+    priceofproduct.text(`Rs.${price}`);
+    buttonEl.text("delete");
+    buttonEl.attr("onclick",`deletion(${serialno})`);
+    
+    forbutton.append(buttonEl);
+    trthat.append(nameofproduct,priceofproduct,forbutton);
+    ourtable.append(trthat);
+};
+function deletion(value){
+    iddelete="data"+value;
+    $(`#${iddelete}`).remove();
 }
-
-submitBtn.addEventListener("click",submit_onClick);
