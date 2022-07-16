@@ -6,10 +6,14 @@ body{
     min-height: 100vh;
     font-family: Sen, sans-serif;
     letter-spacing: 2px;
+    background: #ced1d3;
+}
+
+.user-interface{
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #ced1d3;
+    margin-top: 5%;
 }
 
 .item-container{
@@ -26,6 +30,17 @@ body{
 .form-container{
     margin-top: 5%;
     margin-left: 30%;
+}
+
+.bill-counter {
+    margin: auto;
+    width: 25rem;
+    height: 10rem;
+    text-align: center;
+    font-size: 0.8rem;
+    position: relative;
+    left: 25rem;
+    top: 3rem;
 }
 
 label {

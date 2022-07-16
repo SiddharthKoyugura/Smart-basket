@@ -1,4 +1,9 @@
-var serialno=2;
+let serialno=2;
+let totalPrice = 80;
+
+const itemQuantity = $("#span1");
+const itemPrice = $("#span2");
+
 barcode={
     "5555555555":["LAYS",99],
     "6666666666":["SNICKERS",20],
@@ -15,25 +20,34 @@ $(document).ready(()=>{
     var priceinput = $("#price-input").val();
     if(bardata===""&&itemname===""&&priceinput===""){
         alert("Enter details please");
+        return;
     }
-    serialno+=1;
-    if(itemname===""&&priceinput===""){
-        if(isBarcodeExist(bardata)){
-            console.log(barcode[bardata]);
-            createtable(barcode[bardata][0],barcode[bardata][1]);
-            $("#barcode-data").val("");
+    if(bardata && (itemname || priceinput)){
+        alert("Do not enter any other details when barcode entered.");
+    }
+
+    else{
+        if(bardata===""){
+            if(itemname==="" || priceinput==="" || priceinput<1){
+                alert("Enter the correct details");
+            }else{
+                serialno+=1;
+                totalPrice += parseInt(priceinput);
+                createtable(itemname, priceinput);
+            }
         }
-        else{
-            alert("Enter correct value");
-            $("#barcode-data").val("");
+        else if(isBarcodeExist(bardata)){
+            serialno+=1;
+            totalPrice += barcode[bardata][1];
+            createtable(barcode[bardata][0], barcode[bardata][1]);
+        }else if(!isBarcodeExist(bardata)){
+            alert("Item not found");
         }
     }
-    if(bardata===''){
-        console.log("done");
-        createtable(itemname, priceinput);
-        $("#item-name").val("");
-        $("#price-input").val("");
-    }
+    $("#item-name").val("");
+    $("#price-input").val("");
+    $("#barcode-data").val("");
+    updateBill(serialno, totalPrice);
     });
 });
 
@@ -47,15 +61,25 @@ function createtable(name, price) {
     
     trthat.attr("id","data"+serialno);
     nameofproduct.text(name);
-    priceofproduct.text(`Rs.${price}`);
+    priceofproduct.text(`Rs.${price}/-`);
     buttonEl.text("delete");
     buttonEl.attr("onclick",`deletion(${serialno})`);
     
     forbutton.append(buttonEl);
     trthat.append(nameofproduct,priceofproduct,forbutton);
     ourtable.append(trthat);
-};
+}
+
 function deletion(value){
+    serialno-=1;
     iddelete="data"+value;
+    totalPrice -= parseInt($(`#${iddelete} td`).eq(1).html().match(/\d+/)[0]);
+    updateBill(serialno, totalPrice);
     $(`#${iddelete}`).remove();
+}
+
+
+function updateBill(quantity, price){
+    $("#span1").text(quantity);
+    $("#span2").text(`Rs.${price}/-`);
 }
