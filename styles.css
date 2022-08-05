@@ -9,11 +9,28 @@ body{
     background: #ced1d3;
 }
 
+a{
+    text-decoration: none;
+}
+
 .user-interface{
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 5%;
+}
+
+.result{
+    background-color: green;
+    color:#fff;
+    padding:20px;
+}
+
+.row{
+    display:flex;
+    text-align: center;
+    justify-content: center;
+    margin-top: 2rem;
 }
 
 .item-container{
