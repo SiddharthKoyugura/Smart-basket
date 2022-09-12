@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart basket</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="user-interface">
+        <div class="item-container" id="item-container">
+            <table cellspacing="30" id="table">
+                <thead>
+                    <th>S.No</th>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </thead>
+                {% for item in items: %}
+                    <tr>
+                        <td>{{ items.index(item)+1 }}.</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>Rs.{{ item.price }}/-</td>
+                        <td><a href="{{ url_for('delete_item',index=item.id) }}"><button>delete</button></a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <button id="myBtn">Proceed to Payment</button>
+        </div>
+        <div class="form-container">
+            <form action="{{ url_for('add_item') }}" method="post">
+                <label for="barcode-data">Bar code:</label>
+                <input id="barcode-data" type="text" name="barcode-data" placeholder="Barcode of the item" autocomplete="off">
+                <br>
+                <br>
+                <label for="item-name">Item Name:</label>
+                <input id="item-name" type="text" name="itemName" placeholder="Name of the item" autocomplete="off">
+                <br>
+                <br>
+                <label for="price-input">Price:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <input id="price-input" type="number" min="1" name="priceAmt" placeholder="Price of the item" autocomplete="off">
+                <br>
+                <br>
+                <label for="quantity">Quantity:</label>
+                <input id="quantity" type="number" min="1" step="1" name="quantity" placeholder="How many units?" autocomplete="off">
+                <br>
+                <br>
+                <button type="submit" id="submit-btn">Submit</button>
+            </form>
+        </div>
+    </div>
+    <div class="bill-counter item-container">
+        <h1 >Total items = <span id="span1">{{ no_of_items }}</span></h1>
+        <h1>Total bill = <span id="span2">Rs.{{ total_price }}/-</span></h1>
+    </div>
+
+    <!-- Modal Section -->
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Please Scan the following QR code to Complete the payment</p>
+            <img src="static/Dove.png" alt="QR Code">
+        </div>
+    </div>
+    <script src="static/js/script.js"></script>
+ </body>
+</html>

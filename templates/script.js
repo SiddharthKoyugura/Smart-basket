@@ -1,3 +1,4 @@
+
 let serialno=2;
 let totalPrice = 80;
 
@@ -14,6 +15,7 @@ function isBarcodeExist(eanvalue){
     return isInArray;
 }
 $(document).ready(()=>{
+    // Submit Event Listener
     $("#submit-btn").click(() => {
     var bardata=$("#barcode-data").val();
     var itemname = $("#item-name").val();

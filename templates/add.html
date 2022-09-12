@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart basket</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <form action="{{ url_for('add_item') }}" method="post">
+            <label for="barcode-data">Bar code:</label>
+            <input id="barcode-data" type="text" name="barcode-data" placeholder="Barcode of the item" autocomplete="off">
+            <br>
+            <br>
+            <label for="item-name">Item Name:</label>
+            <input id="item-name" type="text" name="itemName" placeholder="Name of the item" autocomplete="off">
+            <br>
+            <br>
+            <label for="price-input">Price:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <input id="price-input" type="number" min="1" name="priceAmt" placeholder="Price of the item" autocomplete="off">
+            <br>
+            <br>
+            <label for="quantity">Quantity:</label>
+            <input id="quantity" type="number" min="1" step="1" name="quantity" placeholder="How many units?" autocomplete="off">
+            <br>
+            <br>
+            <button type="submit" id="submit-btn">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
