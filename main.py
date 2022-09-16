@@ -4,7 +4,6 @@ from barcode import Barcode
 import random
 
 app = Flask(__name__)
-
 # Implementing csv
 data = pandas.read_csv("items.csv")
 stock_items = data.to_dict(orient="records")
@@ -71,6 +70,6 @@ def delete_item(index):
 def add_into_csv():
     return render_template("add.html")
 
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="localhost", port=3000 ,debug=True)
+    
