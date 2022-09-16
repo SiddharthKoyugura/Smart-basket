@@ -1,16 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart basket</title>
-    <link rel="stylesheet" href="static/styles.css">
-</head>
-<body>
-    <div class="form-container">
-        <form action="{{ url_for('add_item') }}" method="post">
-            <label for="barcode-data">Bar code:</label>
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Smart Cart - ADD{% endblock %}
+{% block content %}
+<style>
+    .messege-container {
+        height: 2rem;
+        margin-top: 2rem;
+    }
+    marquee {
+        font-size: 2rem;
+        font-weight: 800;
+    }
+</style>
+<div class="messege-container">
+    {% with messeges = get_flashed_messages() %}
+        {% if messeges: %}
+            {% for messege in messeges: %}
+            <marquee direction="left" loop="1" scrollamount="15">{{ messege }}</marquee>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+    <div class="form-container add-item jumbotron container">
+        <form action="{{ url_for('add_into_csv') }}" method="post">
+            {{ form.csrf_token }}
+            {{ wtf.quick_form(form) }}
+            <!-- <label for="barcode-data">Bar code:</label>
             <input id="barcode-data" type="text" name="barcode-data" placeholder="Barcode of the item" autocomplete="off">
             <br>
             <br>
@@ -26,8 +41,8 @@
             <input id="quantity" type="number" min="1" step="1" name="quantity" placeholder="How many units?" autocomplete="off">
             <br>
             <br>
-            <button type="submit" id="submit-btn">Submit</button>
+            <button type="submit" disabled style="display: none;" aria-hidden="true">Submit</button>
+            <button type="submit" id="submit-btn">Submit</button> -->
         </form>
     </div>
-</body>
-</html>
+{% endblock %}
