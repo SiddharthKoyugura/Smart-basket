@@ -1,20 +1,28 @@
 from flask import *
-import pandas
-from barcode import Barcode
-import random
 from flask_wtf import FlaskForm
 from wtforms.fields import *
 from wtforms.validators import *
 from flask_bootstrap import Bootstrap
-from csv import writer
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 Bootstrap(app)
 
 app.secret_key = "HelloMyNameIsSiddharth"
-# Implementing csv
-data = pandas.read_csv("items.csv")
-stock_items = data.to_dict(orient="records")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///available-stock.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+
+# Database Definition
+class Cart(db.Model):
+    barcode_number = db.Column(db.Integer, primary_key=True)
+    item_name = db.Column(db.String(250), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"<Cart {self.barcode_number}>"
+
+db.create_all()
 
 # Items data definition
 id = 1
@@ -25,7 +33,7 @@ items = [{
     "price": 50,
 }]
 total_price = 50
-# Home Page Route
+total_items = 1
 
 class NewItemForm(FlaskForm):
     barcode = StringField(label="Barcode:")
@@ -33,9 +41,10 @@ class NewItemForm(FlaskForm):
     price = FloatField(label="Price:")
     submit = SubmitField(label="Add Item")
 
+# Home Page Route
 @app.route("/")
 def home():
-    return render_template("index.html", items=items, total_price=total_price, no_of_items=len(items))
+    return render_template("index.html", items=items, total_price=total_price, no_of_items=total_items)
     
 
 # Add Items into Cart
@@ -45,29 +54,22 @@ def add_item():
     def add_item(id, name, quantity, price):
         return {"id":id, "name":name, "quantity":quantity, "price":price}
 
-    global items, id, total_price
+    global items, id, total_price, total_items
     id += 1
     quantity = 1
+    cart_items = db.session.query(Cart).all()
     try:
-        scrape = Barcode(request.form["barcode-data"])
-        name = scrape.find_barcode()
-        new_item = add_item(id, name, quantity, random.randint(100, 200))
-
+        for item in cart_items:
+            if item.barcode_number == int(request.form["barcode-data"]):
+                new_item = add_item(id, item.item_name, quantity, item.price)
     except:
-        if not request.form["barcode-data"]:
-            if request.form["quantity"]:
-                quantity = int(request.form["quantity"])
-
-            new_item = add_item(id, request.form["itemName"].title(), quantity, int(request.form["priceAmt"]) * quantity)
-
-        else:
-            bar_data = request.form["barcode-data"]
-            for item in stock_items:
-                if bar_data == str(item["BARCODE"]):
-                    new_item = add_item(id, item["PRODUCT_NAME"] + " " +item["WEIGHT"], quantity, int(item["PRICE"].split("/")[0]))
+        if request.form["quantity"]:
+            quantity = int(request.form["quantity"])
+        new_item = add_item(id, request.form["itemName"].title(), quantity, int(request.form["priceAmt"]) * quantity)
     try:
         items.append(new_item)
         total_price += new_item["price"] 
+        total_items += new_item["quantity"]
     except:
         flash("Barcode not found")
     return redirect(url_for("home"))
@@ -75,11 +77,12 @@ def add_item():
 # Delete an item 
 @app.route("/delete/<int:index>")
 def delete_item(index):
-    global items, total_price
+    global items, total_price,total_items
     for item in items:
         if item["id"] == index:
             items.remove(item)
             total_price -= item["price"] 
+            total_items -= item["quantity"]
     return redirect(url_for("home"))
 
 # Add csv interface
@@ -87,16 +90,18 @@ def delete_item(index):
 def add_into_csv():
     cform = NewItemForm()
     if cform.validate_on_submit():
-        barcode = cform.barcode.data
-        item_name = cform.item_name.data
-        price = int(cform.price.data)
-        with open("items.csv", "a", newline="") as f_object:
-            writer_obj = writer(f_object)
-            writer_obj.writerow([barcode, item_name, f"{price}/-"])
-            f_object.close()
-        flash("Item Added to Database")
+        new_item = Cart(
+            barcode_number = cform.barcode.data,
+            item_name = cform.item_name.data,
+            price = int(cform.price.data)
+        )
+        try:
+            db.session.add(new_item)
+            db.session.commit()
+            flash("Item Added to Database")
+        except:
+            flash("Item already exists")
         return redirect(url_for("add_into_csv"))
-
     return render_template("add.html", form=cform)
 
 if __name__ == "__main__":
