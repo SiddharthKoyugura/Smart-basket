@@ -57,21 +57,32 @@ def add_item():
     global items, id, total_price, total_items
     id += 1
     quantity = 1
-    cart_items = db.session.query(Cart).all()
+    db_items = db.session.query(Cart).all()
     try:
-        for item in cart_items:
-            if item.barcode_number == int(request.form["barcode-data"]):
-                new_item = add_item(id, item.item_name, quantity, item.price)
+        try:
+            for item in db_items:
+                if item.barcode_number == int(request.form["barcode-data"]):
+                    for cart_item in items:
+                        if cart_item["name"].lower() == item.item_name.lower():
+                            item_price = items[items.index(cart_item)]["price"] // items[items.index(cart_item)]["quantity"]
+                            items[items.index(cart_item)]["quantity"] += 1
+                            items[items.index(cart_item)]["price"] += item_price
+                            total_price += item_price
+                            total_items += 1
+                            return redirect(url_for("home"))
+                    new_item = add_item(id, item.item_name, quantity, item.price)
+        except:
+            if request.form["quantity"]:
+                quantity = int(request.form["quantity"])
+            new_item = add_item(id, request.form["itemName"].title(), quantity, int(request.form["priceAmt"]) * quantity)
+        try:
+            items.append(new_item)
+            total_price += new_item["price"] 
+            total_items += new_item["quantity"]
+        except:
+            flash("Barcode not found")
     except:
-        if request.form["quantity"]:
-            quantity = int(request.form["quantity"])
-        new_item = add_item(id, request.form["itemName"].title(), quantity, int(request.form["priceAmt"]) * quantity)
-    try:
-        items.append(new_item)
-        total_price += new_item["price"] 
-        total_items += new_item["quantity"]
-    except:
-        flash("Barcode not found")
+        flash("Invalid Details")
     return redirect(url_for("home"))
 
 # Delete an item 
@@ -80,14 +91,19 @@ def delete_item(index):
     global items, total_price,total_items
     for item in items:
         if item["id"] == index:
-            items.remove(item)
-            total_price -= item["price"] 
-            total_items -= item["quantity"]
+            price = item["price"] // item["quantity"]
+            total_price -= price
+            total_items -= 1
+            if item["quantity"] == 1:
+                items.remove(item)
+            else:
+                items[items.index(item)]["quantity"] -= 1
+                items[items.index(item)]["price"] -= price
     return redirect(url_for("home"))
 
-# Add csv interface
+# Add into Database interface
 @app.route("/add", methods=["GET", "POST"])
-def add_into_csv():
+def add_into_db():
     cform = NewItemForm()
     if cform.validate_on_submit():
         new_item = Cart(
@@ -101,7 +117,7 @@ def add_into_csv():
             flash("Item Added to Database")
         except:
             flash("Item already exists")
-        return redirect(url_for("add_into_csv"))
+        return redirect(url_for("add_into_db"))
     return render_template("add.html", form=cform)
 
 if __name__ == "__main__":

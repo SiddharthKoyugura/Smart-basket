@@ -6,6 +6,7 @@
     .messege-container {
         height: 2rem;
         margin-top: 2rem;
+        margin-bottom: 2rem;
     }
     marquee {
         font-size: 2rem;
@@ -22,7 +23,7 @@
     {% endwith %}
 </div>
     <div class="form-container add-item jumbotron container">
-        <form action="{{ url_for('add_into_csv') }}" method="post">
+        <form action="{{ url_for('add_into_db') }}" method="post">
             {{ form.csrf_token }}
             {{ wtf.quick_form(form) }}
         </form>
