@@ -36,7 +36,7 @@ total_price = 50
 total_items = 1
 
 class NewItemForm(FlaskForm):
-    barcode = StringField(label="Barcode:")
+    barcode = StringField(label="Barcode:", render_kw={"autofocus": True})
     item_name = StringField(label="Item Name:")
     price = FloatField(label="Price:")
     submit = SubmitField(label="Add Item")
