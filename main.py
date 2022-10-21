@@ -4,14 +4,36 @@ from wtforms.fields import *
 from wtforms.validators import *
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
+from flask_mqtt import Mqtt
 
 app = Flask(__name__)
 Bootstrap(app)
 
+
 app.secret_key = "HelloMyNameIsSiddharth"
+
+# Database credentials
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///available-stock.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
+
+# MQTT credentials
+app.config['MQTT_BROKER_URL'] = 'broker.emqx.io'
+app.config['MQTT_BROKER_PORT'] = 1883
+app.config['MQTT_USERNAME'] = ''  # Set this item when you need to verify username and password
+app.config['MQTT_PASSWORD'] = ''  # Set this item when you need to verify username and password
+app.config['MQTT_KEEPALIVE'] = 5  # Set KeepAlive time in seconds
+app.config['MQTT_TLS_ENABLED'] = False  # If your server supports TLS, set it True
+topic = '/flask/mqtt'
+mqtt_client = Mqtt(app)
+
+@mqtt_client.on_connect()
+def handle_connect(client, userdata, flags, rc):
+   if rc == 0:
+       print('Connected successfully')
+       mqtt_client.subscribe(topic) # subscribe topic
+   else:
+       print('Bad connection. Code:', rc)
 
 # Database Definition
 class Cart(db.Model):
