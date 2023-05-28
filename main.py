@@ -44,7 +44,8 @@ class Cart(db.Model):
     def __repr__(self):
         return f"<Cart {self.barcode_number}>"
 
-db.create_all()
+with app.app_context():
+    db.create_all()
 
 # Items data definition
 id = 1
@@ -143,4 +144,4 @@ def add_into_db():
     return render_template("add.html", form=cform)
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=3000 ,debug=True)
+    app.run(debug=True)
